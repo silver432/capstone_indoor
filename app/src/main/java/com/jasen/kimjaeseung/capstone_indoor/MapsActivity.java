@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TabHost;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -32,6 +33,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Marker mMarker;
     private Button mButton;
     private LatLng startPoint;
+    private LatLng point1 = new LatLng(37.450562,126.657607);
+    private LatLng point2 = new LatLng(37.450616,126.657165);
+    private LatLng point3 = new LatLng(37.450206,126.657410);
     private ArrayList<LatLng> arrayPoints = new ArrayList<>();
     private SensorManager sm;
     private Sensor accSensor;
@@ -63,13 +67,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         sm.registerListener(this, magnetSensor, SensorManager.SENSOR_DELAY_NORMAL);
         sm.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_NORMAL);
 
-        mButton = (Button) findViewById(R.id.main_button);
-        mButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                movingEvent();
-            }
-        });
+//        mButton = (Button) findViewById(R.id.main_button);
+//        mButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                movingEvent();
+//            }
+//        });
     }
 
 
@@ -89,6 +93,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Add a marker in Sydney and move the camera
         startPoint = new LatLng(37.450340, 126.657292);
         mMarker = mMap.addMarker(new MarkerOptions().position(startPoint).title("Start Point"));
+        mMap.addMarker(new MarkerOptions().position(point1).title("Point 1"));
+        mMap.addMarker(new MarkerOptions().position(point2).title("Point 2"));
+        mMap.addMarker(new MarkerOptions().position(point3).title("Point 3"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(startPoint));
 
         // Zoom in the Google Map
@@ -106,9 +113,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mGeomagnetic = event.values;
 
         if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
-//            movingEvent();
             if (isStart){
                 movingEvent();
+                if (distance(mMarker.getPosition().latitude,mMarker.getPosition().longitude,point1.latitude,point1.longitude)<2){   //point1에 가까울때
+                    Toast.makeText(this,"Point 1 is near",Toast.LENGTH_SHORT).show();
+                }
+                if (distance(mMarker.getPosition().latitude,mMarker.getPosition().longitude,point2.latitude,point2.longitude)<2){   //point2에 가까울때
+                    Toast.makeText(this,"Point 2 is near",Toast.LENGTH_SHORT).show();
+                }
+                if (distance(mMarker.getPosition().latitude,mMarker.getPosition().longitude,point3.latitude,point3.longitude)<2){   //point3에 가까울때
+                    Toast.makeText(this,"Point 3 is near",Toast.LENGTH_SHORT).show();
+                }
             }
             isStart = true;
         }
@@ -129,6 +144,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
         }
+
+
     }
 
     @Override
@@ -155,5 +172,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addPolyline(polylineOptions);
 
         startPoint = newLatLng;
+    }
+
+    public float distance (double lat_a, double lng_a, double lat_b, double lng_b )
+    {
+        double earthRadius = 3958.75;
+        double latDiff = Math.toRadians(lat_b-lat_a);
+        double lngDiff = Math.toRadians(lng_b-lng_a);
+        double a = Math.sin(latDiff /2) * Math.sin(latDiff /2) +
+                Math.cos(Math.toRadians(lat_a)) * Math.cos(Math.toRadians(lat_b)) *
+                        Math.sin(lngDiff /2) * Math.sin(lngDiff /2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double distance = earthRadius * c;
+
+        int meterConversion = 1609;
+
+        return new Float(distance * meterConversion).floatValue();
     }
 }
