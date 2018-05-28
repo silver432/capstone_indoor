@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -22,6 +23,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -97,10 +99,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Add a marker in Sydney and move the camera
         startPoint = new LatLng(37.450340, 126.657292);
-        mMarker = mMap.addMarker(new MarkerOptions().position(startPoint).title("Start Point"));
-        mMap.addMarker(new MarkerOptions().position(point1).title("Point 1"));
-        mMap.addMarker(new MarkerOptions().position(point2).title("Point 2"));
-        mMap.addMarker(new MarkerOptions().position(point3).title("Point 3"));
+        mMarker = mMap.addMarker(new MarkerOptions().position(startPoint).title("My location").icon(BitmapDescriptorFactory.fromResource(R.drawable.baseline_face_black_18dp)).flat(true));
+        mMap.addMarker(new MarkerOptions().position(point1).title("Starbucks").icon(BitmapDescriptorFactory.fromResource(R.drawable.starbucks)));
+        mMap.addMarker(new MarkerOptions().position(point2).title("McDonalds").icon(BitmapDescriptorFactory.fromResource(R.drawable.mcdonald)));
+        mMap.addMarker(new MarkerOptions().position(point3).title("Nike").icon(BitmapDescriptorFactory.fromResource(R.drawable.nike)));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(startPoint));
 
         // Zoom in the Google Map
@@ -121,13 +123,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (isStart){
                 movingEvent();
                 if (distance(mMarker.getPosition().latitude,mMarker.getPosition().longitude,point1.latitude,point1.longitude)<2){   //point1에 가까울때
-                    createNoti();
+                    createNoti(R.drawable.starbucks,"Welcome to Starbucks!");
                 }
                 if (distance(mMarker.getPosition().latitude,mMarker.getPosition().longitude,point2.latitude,point2.longitude)<2){   //point2에 가까울때
-                    createNoti();
+                    createNoti(R.drawable.mcdonald,"Welcome to McDonalds");
                 }
                 if (distance(mMarker.getPosition().latitude,mMarker.getPosition().longitude,point3.latitude,point3.longitude)<2){   //point3에 가까울때
-                    createNoti();
+                    createNoti(R.drawable.nike,"Welcome to Nike");
                 }
             }
             isStart = true;
@@ -163,7 +165,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (mMarker.isVisible()) mMarker.remove();
 
-        mMarker = mMap.addMarker(new MarkerOptions().position(startPoint).title("Start Point"));
+        mMarker = mMap.addMarker(new MarkerOptions().position(startPoint).title("My location").icon(BitmapDescriptorFactory.fromResource(R.drawable.baseline_face_black_18dp)).flat(true));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(startPoint));
 
         // Zoom in the Google Map
@@ -196,16 +198,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @SuppressWarnings("deprecation")
-    private void createNoti(){
+    private void createNoti(int drawable,String text){
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher_foreground))
-                        .setContentTitle("My notification")
+                        .setSmallIcon(R.drawable.baseline_face_black_18dp)
+                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), drawable))
+                        .setContentTitle("Ad Information")
                         .setDefaults(Notification.DEFAULT_ALL)
                         .setStyle(new NotificationCompat.BigTextStyle())
                         .setPriority(NotificationManager.IMPORTANCE_HIGH)
-                        .setContentText("Hello World!");
+                        .setContentText(text);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.notify(0,mBuilder.build());
