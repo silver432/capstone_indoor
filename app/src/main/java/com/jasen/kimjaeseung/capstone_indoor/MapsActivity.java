@@ -2,6 +2,9 @@ package com.jasen.kimjaeseung.capstone_indoor;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -122,14 +125,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
             if (isStart){
                 movingEvent();
-                if (distance(mMarker.getPosition().latitude,mMarker.getPosition().longitude,point1.latitude,point1.longitude)<2){   //point1에 가까울때
-                    createNoti(R.drawable.starbucks,"Welcome to Starbucks!");
+                if (distance(mMarker.getPosition().latitude,mMarker.getPosition().longitude,point1.latitude,point1.longitude)<5){   //point1에 가까울때
+                    createNoti(R.drawable.starbucks,"Welcome to Starbucks!","starbucks");
                 }
-                if (distance(mMarker.getPosition().latitude,mMarker.getPosition().longitude,point2.latitude,point2.longitude)<2){   //point2에 가까울때
-                    createNoti(R.drawable.mcdonald,"Welcome to McDonalds");
+                if (distance(mMarker.getPosition().latitude,mMarker.getPosition().longitude,point2.latitude,point2.longitude)<5){   //point2에 가까울때
+                    createNoti(R.drawable.mcdonald,"Welcome to McDonalds","mcdonalds");
                 }
-                if (distance(mMarker.getPosition().latitude,mMarker.getPosition().longitude,point3.latitude,point3.longitude)<2){   //point3에 가까울때
-                    createNoti(R.drawable.nike,"Welcome to Nike");
+                if (distance(mMarker.getPosition().latitude,mMarker.getPosition().longitude,point3.latitude,point3.longitude)<5){   //point3에 가까울때
+                    createNoti(R.drawable.nike,"Welcome to Nike","nike");
                 }
             }
             isStart = true;
@@ -198,7 +201,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @SuppressWarnings("deprecation")
-    private void createNoti(int drawable,String text){
+    private void createNoti(int drawable,String text,String shopName){
+        Intent intent = new Intent(this,AdActivity.class);
+        intent.putExtra("ad",shopName);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addNextIntentWithParentStack(intent);
+
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.baseline_face_black_18dp)
@@ -207,6 +219,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         .setDefaults(Notification.DEFAULT_ALL)
                         .setStyle(new NotificationCompat.BigTextStyle())
                         .setPriority(NotificationManager.IMPORTANCE_HIGH)
+                        .setContentIntent(resultPendingIntent)
                         .setContentText(text);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
