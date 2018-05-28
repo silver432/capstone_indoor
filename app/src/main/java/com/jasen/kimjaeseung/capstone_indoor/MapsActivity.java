@@ -1,5 +1,8 @@
 package com.jasen.kimjaeseung.capstone_indoor;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -7,6 +10,8 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -116,13 +121,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (isStart){
                 movingEvent();
                 if (distance(mMarker.getPosition().latitude,mMarker.getPosition().longitude,point1.latitude,point1.longitude)<2){   //point1에 가까울때
-                    Toast.makeText(this,"Point 1 is near",Toast.LENGTH_SHORT).show();
+                    createNoti();
                 }
                 if (distance(mMarker.getPosition().latitude,mMarker.getPosition().longitude,point2.latitude,point2.longitude)<2){   //point2에 가까울때
-                    Toast.makeText(this,"Point 2 is near",Toast.LENGTH_SHORT).show();
+                    createNoti();
                 }
                 if (distance(mMarker.getPosition().latitude,mMarker.getPosition().longitude,point3.latitude,point3.longitude)<2){   //point3에 가까울때
-                    Toast.makeText(this,"Point 3 is near",Toast.LENGTH_SHORT).show();
+                    createNoti();
                 }
             }
             isStart = true;
@@ -188,5 +193,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         int meterConversion = 1609;
 
         return new Float(distance * meterConversion).floatValue();
+    }
+
+    @SuppressWarnings("deprecation")
+    private void createNoti(){
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher_foreground))
+                        .setContentTitle("My notification")
+                        .setDefaults(Notification.DEFAULT_ALL)
+                        .setStyle(new NotificationCompat.BigTextStyle())
+                        .setPriority(NotificationManager.IMPORTANCE_HIGH)
+                        .setContentText("Hello World!");
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(0,mBuilder.build());
     }
 }
